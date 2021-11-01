@@ -1,10 +1,9 @@
 import constants from "../constants/constants";
 
 const fetchRequests = {
-    getWishList: async (id) => {
+    getWishList: async (id, token) => {
         return await fetch(`${constants.BASE_URL}/user/${id}`)
-            .then(data => data.json())
-            .then((data) => data);
+            .then(data => data.json());
     },
 
     signUpUser: async (data) => {
@@ -29,21 +28,18 @@ const fetchRequests = {
             .then(data => data.json())
     },
 
-    logOutUser: async () => {
-        const token = JSON.parse(localStorage.getItem('user'));
-
+    logOutUser: async (token) => {
         return await fetch(`${constants.BASE_URL}/auth/logout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization' : token.accessToken
-            },
-        });
+            }
+        })
+            .then(data => data)
     },
 
-    addToWishList: async (id, data) => {
-        const token = JSON.parse(localStorage.getItem('user'));
-
+    addToWishList: async (id, data, token) => {
         return await fetch(`${constants.BASE_URL}/user/${id}`, {
             method: 'POST',
             headers: {
@@ -55,20 +51,18 @@ const fetchRequests = {
             .then(data => data.json());
     },
 
-   removeFromWishList: async (id, data) => {
-       const token = JSON.parse(localStorage.getItem('user'));
-
-       return await fetch(`${constants.BASE_URL}/user/${id}/films/${data}`, {
+   removeFromWishList: async (id, data, token) => {
+        return await fetch(`${constants.BASE_URL}/user/${id}/films/${data}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization' : token.accessToken
             }
-        });
+        })
+           .then(data => data);
     },
 
-    updateFilmInWishList: async (id, data) => {
-        const token = JSON.parse(localStorage.getItem('user'));
+    updateFilmInWishList: async (id, data, token) => {
 
         return await fetch(`${constants.BASE_URL}/user/${id}/films/${data._id}`, {
             method: 'PUT',
@@ -78,7 +72,7 @@ const fetchRequests = {
             },
             body: JSON.stringify(data)
         })
-            .then(data => data.json());
+            .then(data => data.json())
     }
 }
 

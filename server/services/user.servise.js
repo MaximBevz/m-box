@@ -2,6 +2,12 @@ const { wishFilms, User } = require('../dataBase');
 const { passwordHasher } = require('../helpers');
 
 module.exports = {
+    getUserFilms: async (id) => {
+        const filmsList = await wishFilms.find({user: id});
+
+        return filmsList;
+    },
+
     createUser: async (data) => {
         const { password, email } = data;
 
@@ -17,6 +23,7 @@ module.exports = {
 
         return createdUser;
     },
+
     updateFilmById: async (params, body) => {
 
         const updatedUser = await wishFilms.findByIdAndUpdate(params.filmId, body);
@@ -26,12 +33,11 @@ module.exports = {
 
     addFilm: async (data, user) => {
 
-        await wishFilms.create({...data, user: user._id});
-
-        const updatedUserFilms = await wishFilms.find({user: user._id});
+        const updatedUserFilms = await wishFilms.create({...data, user: user._id});
 
         return updatedUserFilms;
     },
+
     removeFilm: async (data) => {
         const {filmId} = data;
 

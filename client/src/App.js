@@ -1,10 +1,11 @@
 import {useState, useEffect} from 'react';
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
     BrowserRouter as Router,
     Switch,
     Route,
 } from "react-router-dom";
+import {setAuthUser} from "./redux";
 import Home from './pages/home/home';
 import SingIn from './pages/sign-in/sign-in';
 import SignUp from './pages/sign-up/sing-up';
@@ -12,12 +13,13 @@ import Profile from './pages/profile/profile';
 import Movies from './pages/movies/movies';
 import Header from "./components/header/header";
 import Footer from "./components/footer/footer";
-import MovieItemInfo from './pages/movie-item-info/movie-item-info';
 
+import MovieItemInfo from './pages/movie-item-info/movie-item-info';
 import './App.scss';
 
 function App() {
 
+    const dispatch = useDispatch();
     const {isAuth} = useSelector(({authUser}) => authUser);
 
     const [theme, setTheme] = useState();
@@ -25,6 +27,7 @@ function App() {
         setTheme(mode);
     };
     useEffect(() => {
+        dispatch(setAuthUser(JSON.parse(localStorage.getItem('user'))));
         setTheme(localStorage.getItem('theme'));
     }, []);
 

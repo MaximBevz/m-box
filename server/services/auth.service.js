@@ -22,8 +22,8 @@ module.exports = {
             ...tokenPair,
             user: {
                 email: userByEmail.email,
-                id: userByEmail._id,
-                name: userByEmail.name
+                name: userByEmail.name,
+                _id: userByEmail._id
             }
         };
 
@@ -32,5 +32,17 @@ module.exports = {
 
     logout: async (token) => {
         await OAuth.findOneAndDelete({accessToken: token});
+    },
+
+    NewToken: async (data) => {
+        const {refreshToken, user: {email}} = data;
+        await OAuth.findOneAndDelete({refreshToken});
+
+        const tokenPair = oAuthTokenGenerator.generateTokenPair({email});
+        await OAuth.create({...tokenPair, user: data.user});
+
+        const resUser = {...tokenPair, user: data.user}
+
+        return resUser;
     }
 }

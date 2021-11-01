@@ -1,20 +1,6 @@
 const { responseMessagesEnum, constants } = require('../constants');
 const { userServices, authServices } = require('../services');
 
-
-// controller
-//
-// service
-//
-// helpers
-//
-// data access leyer - usersDal
-// cretae/get/update
-//
-// mongo
-// mysql
-
-
 module.exports = {
     createProfile: async (req, res, next) => {
         try {
@@ -43,6 +29,18 @@ module.exports = {
             await authServices.logout(token);
 
             res.status(204).json('success');
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    createNewToken: async (req, res, next) => {
+        try {
+            const tokens = await authServices.NewToken(req.user);
+
+            console.log(tokens);
+
+            res.json(tokens);
         } catch (e) {
             next(e);
         }

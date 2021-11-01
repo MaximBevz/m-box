@@ -3,7 +3,7 @@ const router = require('express').Router();
 const { userController } = require('../controllers');
 const { userMiddleware, authMiddleware } = require('../middlewares');
 
-router.get('/:userId',  userMiddleware.checkIsUserPresent, userController.getUserFilms);
+router.get('/:userId', userMiddleware.checkIsUserPresent, userController.getUserFilms);
 
 router.post('/:userId', authMiddleware.checkAccessToken, userMiddleware.checkIsUserPresent, userController.addFilmInWishList);
 

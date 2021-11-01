@@ -1,4 +1,3 @@
-const { wishFilms } = require('../dataBase');
 const { userServices } = require('../services');
 const { responseMessagesEnum } = require('../constants');
 
@@ -7,7 +6,7 @@ module.exports = {
         try {
             const {id} = req.user;
 
-            const filmsList = await wishFilms.find({user: id});
+            const filmsList = await userServices.getUserFilms(id);
 
             res.status(responseMessagesEnum.SUCCESS.code).json(filmsList);
         } catch (e) {

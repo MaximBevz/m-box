@@ -1,20 +1,25 @@
-import { useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import fetchRequests from '../../utils/fetchRequest';
 import {useLocation} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import fetchRefresh from "../../utils/refreshToken";
+import {setAuthUser} from "../../redux";
 
 import './profile.scss';
 
 export default function Profile() {
 
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const id = location.pathname.split('/').pop();
 
     const [wishFilms, setWishFilms] = useState([]);
     const [newFilm, setNewFilm] = useState('');
+    const {isAuth} = useSelector(({authUser}) => authUser);
 
     useEffect(async () => {
-        const films = await fetchRequests.getWishList(id);
+        const films = await fetchRequests.getWishList(id, isAuth);
         if (films.length > 0) {
             setWishFilms(films);
         }
@@ -26,9 +31,9 @@ export default function Profile() {
 
         const film = {filmName: newFilm, isWatched: false};
 
-        const newFilms = await fetchRequests.addToWishList(id, film);
+        const newFilms = await fetchRequests.addToWishList(id, film, isAuth);
 
-        setWishFilms(newFilms);
+        setWishFilms([...wishFilms, newFilms]);
 
         localStorage.setItem('wishFilms', JSON.stringify(newFilms));
 
@@ -36,7 +41,7 @@ export default function Profile() {
     };
 
     const removeFilm = async (filmId) => {
-        await fetchRequests.removeFromWishList(id, filmId);
+        await fetchRequests.removeFromWishList(id, filmId, isAuth);
 
         const films = wishFilms.filter(item => item._id !== filmId);
         localStorage.setItem('wishFilms', JSON.stringify(films));
@@ -44,11 +49,15 @@ export default function Profile() {
     }
 
     const toggleWatched = async (filmId) => {
+        // const res = await fetchRefresh.sendRefreshToken(isAuth.refreshToken);
+        // dispatch(setAuthUser(res));
+
 
         let updatedFilm = wishFilms.find(item => item._id === filmId);
         updatedFilm = {...updatedFilm, isWatched: !updatedFilm.isWatched};
 
-        await fetchRequests.updateFilmInWishList(id, updatedFilm);
+        await fetchRequests.updateFilmInWishList(id, updatedFilm, isAuth);
+
         const newFilms = wishFilms.map(item => {
             if(item._id === filmId) {
                return updatedFilm;

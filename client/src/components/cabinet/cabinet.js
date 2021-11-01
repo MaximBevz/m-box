@@ -1,26 +1,20 @@
-import {useState, useEffect} from 'react';
 import fetchRequests from '../../utils/fetchRequest';
-import {Link, useHistory, useLocation} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 
 import './cabinet.scss';
+import {useDispatch, useSelector} from "react-redux";
+import {setAuthUser} from "../../redux";
 
 export default function Cabinet() {
 
-    const [isUserAuth, setIsUserAuth] = useState(false);
     const history = useHistory();
-    const location = useLocation();
-
-    useEffect(() => {
-        const profileData = JSON.parse(localStorage.getItem('user'));
-        if(profileData) {
-            setIsUserAuth(profileData);
-        }
-    }, [location]);
+    const dispatch = useDispatch();
+    const {isAuth} = useSelector(({authUser}) => authUser);
 
     const logOut = async () => {
-        await fetchRequests.logOutUser();
+        await fetchRequests.logOutUser(isAuth);
         localStorage.clear();
-        setIsUserAuth(false);
+        dispatch(setAuthUser(false));
         history.push('/');
     }
 
@@ -28,7 +22,7 @@ export default function Cabinet() {
         <div className='cabinet'>
 
             {
-                !isUserAuth ? (
+                !isAuth ? (
                     <>
                         <Link className='cabinet-btn btn' to={'/auth/sign-in'}>login</Link>
                         <Link className='cabinet-btn btn' to={'/auth/sign-up'}>register</Link>
@@ -36,7 +30,7 @@ export default function Cabinet() {
                 ) : (
                     <>
                         <button className='cabinet-btn btn' onClick={logOut}>logout</button>
-                        <Link className="cabinet-btn btn" to={`/user/${isUserAuth.user?.id}`}>cabinet</Link>
+                        <Link className="cabinet-btn btn" to={`/user/${isAuth.user?._id}`}>cabinet</Link>
                     </>
                 )
             }
